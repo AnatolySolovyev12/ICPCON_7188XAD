@@ -2,7 +2,7 @@ Now work with 5DigitLed.
 
 Shows ticker on 5 LED segments
 
-"
+```
 
     T
    TE
@@ -34,4 +34,4 @@ RAY
 AY
 Y
 
-"
+```
