@@ -1,6 +1,6 @@
 5DigitLed.
 
-Displays user input on a ticker of 5 LED elements.
+Displays user input on a ticker of 5 LED elements. / Выводит пользовательский ввод на бегущую строку из 5-и светодиодных элементов.
 
 ```
 
