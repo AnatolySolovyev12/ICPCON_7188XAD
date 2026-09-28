@@ -1,6 +1,6 @@
-Now work with 5DigitLed.
+5DigitLed.
 
-Shows ticker on 5 LED segments
+Displays user input on a ticker of 5 LED elements.
 
 ```
 
@@ -35,3 +35,4 @@ AY
 Y
 
 ```
+<img width="518" height="379" alt="image" src="https://github.com/user-attachments/assets/51279b42-932c-4a44-906d-d3c82bff87a3" />
