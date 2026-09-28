@@ -1,7 +1,6 @@
 ﻿#include <7188XA.H>
 #include <stdio.h>
 #include <string.h>
-#include <iostream.h>
 
 /*
 
@@ -166,14 +165,7 @@ void ShowText5(const char* text)
 
 
 
-
-
-// Оба варианта допустимы
-const char* fullText = "     TEST WITH FULL CHAR ARRAY     ";
-char fullTextCharArray[] = "     TEST WITH FULL CHAR ARRAY     ";
 int count;
-
-
 
 void main(void)
 {
@@ -181,7 +173,44 @@ void main(void)
     InitLib();
     Init5DigitLed();
 
-    for (count = 0; count < strlen(fullTextCharArray); ++count)
+    char* spaceCharArray = "     ";
+    char enteredText[2401];
+
+    LineInput(enteredText, 2401);
+
+    Print("\nYour input sring:\n");
+    Print(enteredText);
+    Print("\n\n");
+
+    char str[10];
+
+    int lenText = strlen(enteredText);
+
+    if (lenText < 0)
+        lenText = 0;
+
+    if (lenText > 99999)
+        lenText = 99999;
+
+    sprintf(str, "%d", lenText); // %d - это спецификатор формата для целого знакового числа типа int в десятичной системе.
+
+    Print("\nLength entered string:\n");
+    Print(str);
+    Print("\n\n");
+
+    char* fullText = new char[strlen(spaceCharArray) + strlen(enteredText) + strlen(spaceCharArray) + 1];
+
+    if (fullText == 0)
+    {
+        Print("Not enough memory.\r\n");
+        return;
+    }
+
+    strcpy(fullText, spaceCharArray);
+    strcat(fullText, enteredText);
+    strcat(fullText, spaceCharArray);
+
+    for (count = 0; count < strlen(fullText); ++count)
     {
         if (Kbhit()) // Точка выхода из программы                   
         {
@@ -200,10 +229,10 @@ void main(void)
         tempTextCharArray[4] = fullText[count + 4];
         tempTextCharArray[5] = '\0';
 
-        cout << tempTextCharArray << endl;
-
         ShowText5(tempTextCharArray);
-        Delay(300);
+        Delay(400);
     }
 
+
+    delete[] fullText;
 }
