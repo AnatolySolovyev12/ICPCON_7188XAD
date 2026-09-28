@@ -1,23 +1,23 @@
-﻿#include <7188XA.H>
+#include <7188XA.H>
 #include <stdio.h>
 #include <string.h>
 
-/*
-
+	 /*
+	 
 128 | 64 | 32 | 16 | 8 | 4 | 2 | 1
-
+	 
 00000000
 
-       a = 6
+	   a = 6
        ---
   f = 1 |   | b = 5
        -g-     g = 0
   e = 2 |   | c = 4
        ---
         d = 3       dp = 7
-
-        */
-
+		
+		*/
+	 
 #define SEG_G   0x01  /* средний, bit 0 */
 #define SEG_F   0x02  /* верхний левый, bit 1 */
 #define SEG_E   0x04  /* нижний левый, bit 2 */
@@ -92,49 +92,49 @@ unsigned char Get5DigitLedMask(char ch)
 
     switch (ch)
     {
-    case '0': return SEG_0;
-    case '1': return SEG_1;
-    case '2': return SEG_2;
-    case '3': return SEG_3;
-    case '4': return SEG_4;
-    case '5': return SEG_5;
-    case '6': return SEG_6;
-    case '7': return SEG_7;
-    case '8': return SEG_8;
-    case '9': return SEG_9;
+        case '0': return SEG_0;
+        case '1': return SEG_1;
+        case '2': return SEG_2;
+        case '3': return SEG_3;
+        case '4': return SEG_4;
+        case '5': return SEG_5;
+        case '6': return SEG_6;
+        case '7': return SEG_7;
+        case '8': return SEG_8;
+        case '9': return SEG_9;
 
-    case 'A': return SEG_A_CHAR;
-    case 'B': return SEG_B_CHAR;
-    case 'C': return SEG_C_CHAR;
-    case 'D': return SEG_D_CHAR;
-    case 'E': return SEG_E_CHAR;
-    case 'F': return SEG_F_CHAR;
-    case 'G': return SEG_G_CHAR;
-    case 'H': return SEG_H_CHAR;
-    case 'I': return SEG_I_CHAR;
-    case 'J': return SEG_J_CHAR;
-    case 'K': return SEG_K_CHAR;
-    case 'L': return SEG_L_CHAR;
-    case 'M': return SEG_M_CHAR;
-    case 'N': return SEG_N_CHAR;
-    case 'O': return SEG_O_CHAR;
-    case 'P': return SEG_P_CHAR;
-    case 'Q': return SEG_Q_CHAR;
-    case 'R': return SEG_R_CHAR;
-    case 'S': return SEG_S_CHAR;
-    case 'T': return SEG_T_CHAR;
-    case 'U': return SEG_U_CHAR;
-    case 'V': return SEG_V_CHAR;
-    case 'W': return SEG_W_CHAR;
-    case 'X': return SEG_X_CHAR;
-    case 'Y': return SEG_Y_CHAR;
-    case 'Z': return SEG_Z_CHAR;
+        case 'A': return SEG_A_CHAR;
+        case 'B': return SEG_B_CHAR;
+        case 'C': return SEG_C_CHAR;
+        case 'D': return SEG_D_CHAR;
+        case 'E': return SEG_E_CHAR;
+        case 'F': return SEG_F_CHAR;
+        case 'G': return SEG_G_CHAR;
+        case 'H': return SEG_H_CHAR;
+        case 'I': return SEG_I_CHAR;
+        case 'J': return SEG_J_CHAR;
+        case 'K': return SEG_K_CHAR;
+        case 'L': return SEG_L_CHAR;
+        case 'M': return SEG_M_CHAR;
+        case 'N': return SEG_N_CHAR;
+        case 'O': return SEG_O_CHAR;
+        case 'P': return SEG_P_CHAR;
+        case 'Q': return SEG_Q_CHAR;
+        case 'R': return SEG_R_CHAR;
+        case 'S': return SEG_S_CHAR;
+        case 'T': return SEG_T_CHAR;
+        case 'U': return SEG_U_CHAR;
+        case 'V': return SEG_V_CHAR;
+        case 'W': return SEG_W_CHAR;
+        case 'X': return SEG_X_CHAR;
+        case 'Y': return SEG_Y_CHAR;
+        case 'Z': return SEG_Z_CHAR;
 
-    case '-': return SEG_MINUS;
-    case '_': return SEG_UNDERSCORE;
-    case '.': return SEG_DOT;
-    case '=': return SEG_EQUAL;
-    case ' ': return SEG_BLANK;
+        case '-': return SEG_MINUS;
+        case '_': return SEG_UNDERSCORE;
+        case '.': return SEG_DOT;
+        case '=': return SEG_EQUAL;
+        case ' ': return SEG_BLANK;
     }
 
     return SEG_BLANK;
@@ -142,7 +142,7 @@ unsigned char Get5DigitLedMask(char ch)
 
 
 
-void ShowText5(const char* text)
+void ShowText5(const char *text)
 {
     int pos;
     unsigned char mask;
@@ -169,64 +169,64 @@ int count;
 
 void main(void)
 {
+	     
+InitLib();
+Init5DigitLed();
 
-    InitLib();
-    Init5DigitLed();
+const char* spaceCharArray = "     ";
+char enteredText[2401];
 
-    const char* spaceCharArray = "     ";
-    char enteredText[2401];
+LineInput(enteredText, 2401);
 
-    LineInput(enteredText, 2401);
+Print("\nYour input sring:\n");
+Print(enteredText);
+Print("\n\n");
 
-    Print("\nYour input sring:\n");
-    Print(enteredText);
-    Print("\n\n");
+char str [10];
 
-    char str[10];
+int lenText = strlen(enteredText);
 
-    int lenText = strlen(enteredText);
+sprintf(str, "%d", lenText); // %d - это спецификатор формата для целого знакового числа типа int в десятичной системе.
 
-    sprintf(str, "%d", lenText); // %d - это спецификатор формата для целого знакового числа типа int в десятичной системе.
+Print("\nLength entered string:\n");
+Print(str);
+Print("\n\n");
 
-    Print("\nLength entered string:\n");
-    Print(str);
-    Print("\n\n");
+char * fullText = new char[strlen(spaceCharArray) + strlen(enteredText) + strlen(spaceCharArray) + 1];
 
-    char* fullText = new char[strlen(spaceCharArray) + strlen(enteredText) + strlen(spaceCharArray) + 1];
+if (fullText == 0)
+{
+    Print("Not enough memory.\r\n");
+    return;
+}
 
-    if (fullText == 0)
-    {
-        Print("Not enough memory.\r\n");
-        return;
-    }
+strcpy(fullText, spaceCharArray);
+strcat(fullText, enteredText);
+strcat(fullText, spaceCharArray);
 
-    strcpy(fullText, spaceCharArray);
-    strcat(fullText, enteredText);
-    strcat(fullText, spaceCharArray);
-
-    for (count = 0; count < strlen(fullText); ++count)
-    {
-        if (Kbhit()) // Точка выхода из программы                   
-        {
-            int data = Getch();
-
-            if (data == 'q' || data == 'Q')
-                return;
-        }
-
-        char tempTextCharArray[6];
+for(count = 0; count < strlen(fullText); ++count)
+{
+    if(Kbhit()) // Точка выхода из программы                   
+    {                             
+        int data=Getch();  
+				
+        if(data=='q' || data=='Q')                        
+            return;                                      
+    }  
+	
+	char tempTextCharArray[6];
 
         tempTextCharArray[0] = fullText[count];
-        tempTextCharArray[1] = fullText[count + 1];
-        tempTextCharArray[2] = fullText[count + 2];
-        tempTextCharArray[3] = fullText[count + 3];
-        tempTextCharArray[4] = fullText[count + 4];
+        tempTextCharArray[1] = fullText[count+1];
+        tempTextCharArray[2] = fullText[count+2];
+        tempTextCharArray[3] = fullText[count+3];
+        tempTextCharArray[4] = fullText[count+4];
         tempTextCharArray[5] = '\0';
+		
+	ShowText5(tempTextCharArray);
+    Delay(400);
+}
 
-        ShowText5(tempTextCharArray);
-        Delay(400);
-    }
 
-
-    delete[] fullText;
+delete[] fullText;
 }
