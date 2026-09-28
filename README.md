@@ -1,3 +1,16 @@
+Instructions for interacting with the ICP CON I-7188XAD industrial controller are posted here. The repository also contains code and executables that can be downloaded to the controller /
+Здесь выложены инструкции по взаимодействию с промышленным контроллером ICP CON I-7188XAD. Также в репозитории присутствуют код и исполняемые файлы, которые можно загрузить на контроллер
+
+Instructions for connecting to the controller via MiniOS 7 / Инструкция по подключению к контроллеру через MiniOS 7
+[fast start.docx](https://github.com/user-attachments/files/32741718/fast.start.docx)
+
+Borland Turbo C++ 3.x Compiler Installation and Startup Instructions (DOS) / Инструкция по установке и запуску компилятора Borland Turbo C++ 3.x (DOS)
+[compiler manula.docx](https://github.com/user-attachments/files/32742054/compiler.manula.docx)
+
+List of commands for working with MiniOS 7 with explanations / Список команд для работы с MiniOS 7 с пояснениями
+[miniOS command.docx](https://github.com/user-attachments/files/32742110/miniOS.command.docx)
+
+
 5DigitLed.
 
 Displays user input on a ticker of 5 LED elements. / Выводит пользовательский ввод на бегущую строку из 5-и светодиодных элементов.
