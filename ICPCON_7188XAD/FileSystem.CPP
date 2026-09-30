@@ -269,12 +269,15 @@ strcat(fullText, spaceCharArray);
 		textFromFile = GetFilePositionByNo_AB(1, countOfFileB); 
 	
 		FILE_DATA far * fileStruct = GetFileInfoByNo_AB(1,countOfFileB);
+		
+		Print("Struct original data: %s\r\n", fileStruct->fname);
 	
 		char * buffForWrite = new char[fileStruct->size + 1]; // +1 для '\0'
 	
 		if(textFromFile != NULL)
 		{
 			Print("B: File size: %ld\r\n", fileStruct->size);
+			Print("B: Text in file:\r\n");
 
 			for (int i = 0; i < fileStruct->size; ++i)
 			{
@@ -295,13 +298,8 @@ strcat(fullText, spaceCharArray);
 	
 		Print("\n\nbuffForWrite =  %s\r\n", buffForWrite);
 		
-		
-		
-	FILE_DATA testFileStruct = *fileStruct;
-		
-		
-		
-		
+	FILE_DATA noPtrFileStruct = *fileStruct;
+	FILE_DATA * ptrFileStructSecond = &noPtrFileStruct;	
 		
 	int status = OS7_DeleteAllFile(1);	
 	
@@ -310,20 +308,15 @@ strcat(fullText, spaceCharArray);
 	else if(status == -2) Print("NO FILE IN DISK\r\n");
 	else if(status == -3) Print("DiskB size is zero\r\n");
 
-		
 	char far * buffForWriteSecond = "456";
 	
-	
-	if(!OS7_OpenWriteFile(1) && fileStruct != NULL)
+	if(!OS7_OpenWriteFile(1) && ptrFileStructSecond != NULL)
 	{
 		if(OS7_WriteFile(1,buffForWrite,strlen(buffForWrite)) >= 0)
 		{
-			
-			
-			
 			if(OS7_WriteFile(1,buffForWriteSecond,strlen(buffForWriteSecond)) >= 0)
 			{
-				if(OS7_CloseWriteFile(1, fileStruct) >=0)
+				if(OS7_CloseWriteFile(1, ptrFileStructSecond) >=0)
 				{
 					Print("DATA IS ACCEPT\r\n");
 				}
@@ -336,9 +329,6 @@ strcat(fullText, spaceCharArray);
 			{
 				Print("OS7_WriteFile Error: somthing going wrong with buffForWriteSecond\r\n");
 			}
-				
-			
-			
 		}
 		else
 		{
@@ -352,26 +342,8 @@ strcat(fullText, spaceCharArray);
 		else
 			Print("OS7_OpenWriteFile Error: fileStruct is NULL\r\n");
 	}
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		delete[] buffForWrite;
-		
 	}
-
-
-
-
-
-
-
-
 
 
 
