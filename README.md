@@ -50,6 +50,7 @@ Y
 ```
 <img width="518" height="379" alt="image" src="https://github.com/user-attachments/assets/51279b42-932c-4a44-906d-d3c82bff87a3" />
 
+
 FileSystem
 
 Subtracts an existing file on disk B and allows you to add user input there by caching the contents of the old file, then deleting it and creating a new file into which the cache is written and then what the user entered. The file is saved with the same name as the old file. / Вычитывает существующий файл на диске B и позволяет дописывать туда пользовательский ввод, путём кэширования содержимого старого файла, последующего его удаления и создания нового файла, в который записывается кэш и затем то что ввёл пользователь. Файл сохраняется с тем же именем что было у старого файла. 
