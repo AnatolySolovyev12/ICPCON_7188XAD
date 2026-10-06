@@ -125,6 +125,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="comExchange.cpp" />
     <ClCompile Include="FileSystem.CPP" />
     <ClCompile Include="ICPCON_7188XAD.cpp" />
   </ItemGroup>
