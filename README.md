@@ -8,7 +8,8 @@ Borland Turbo C++ 3.x Compiler Installation and Startup Instructions (DOS) / И�
 [compiler manula.docx](https://github.com/user-attachments/files/32742054/compiler.manula.docx)
 
 List of commands for working with MiniOS 7 with explanations / Список команд для работы с MiniOS 7 с пояснениями
-[miniOS command.docx](https://github.com/user-attachments/files/32742110/miniOS.command.docx)
+[miniOS command.docx](https://github.com/user-attachments/files/32742110/miniOS.command.docx)  
+
 
 
 5DigitLed
@@ -48,7 +49,8 @@ AY
 Y
 
 ```
-<img width="518" height="379" alt="image" src="https://github.com/user-attachments/assets/51279b42-932c-4a44-906d-d3c82bff87a3" />
+<img width="518" height="379" alt="image" src="https://github.com/user-attachments/assets/51279b42-932c-4a44-906d-d3c82bff87a3" />  
+
 
 
 FileSystem
@@ -57,9 +59,15 @@ Subtracts an existing file on disk B and allows you to add user input there by c
 
 <img width="472" height="380" alt="image" src="https://github.com/user-attachments/assets/4bb2fe71-2fc5-4b76-a5b5-3189f9a207e8" />
 
-<img width="410" height="501" alt="image" src="https://github.com/user-attachments/assets/c772e173-d4db-4d9f-ad10-bbdc796d75b8" />
+<img width="410" height="501" alt="image" src="https://github.com/user-attachments/assets/c772e173-d4db-4d9f-ad10-bbdc796d75b8" />  
+
 
 
 comExchange
 
 Throws traffic from COM1 (RS-232/485) to COM2 (RS-485) and vice versa. Also, all traffic is duplicated for COM4 analysis (RS-232). As an example, 7188 is placed in the gap between the FST counter and the modem and through COM4 you can track the exchange. / Прокидывает траффик от COM1(RS-232/485) к COM2(RS-485) и наоборот. Также весь траффик дублируется для анализа на COM4(RS-232). В качестве примера 7188 ставится в разрыв между счётчиком ПСЧ и модемом и через COM4 можно отслеживать наличие обмена.
+
+
+
+
+
