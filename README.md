@@ -65,3 +65,6 @@ Subtracts an existing file on disk B and allows you to add user input there by c
 ### **comExchange**
 
 Throws traffic from COM1 (RS-232/485) to COM2 (RS-485) and vice versa. Also, all traffic is duplicated for COM4 analysis (RS-232). As an example, 7188 is placed in the gap between the FST counter and the modem and through COM4 you can track the exchange. / Прокидывает траффик от COM1(RS-232/485) к COM2(RS-485) и наоборот. Также весь траффик дублируется для анализа на COM4(RS-232). В качестве примера 7188 ставится в разрыв между счётчиком ПСЧ и модемом и через COM4 можно отслеживать наличие обмена.
+
+
+<img width="1014" height="813" alt="123 (1)" src="https://github.com/user-attachments/assets/2931d001-3dc0-458d-bb1f-d5c404094f3a" />
