@@ -9,10 +9,8 @@ Borland Turbo C++ 3.x Compiler Installation and Startup Instructions (DOS) / И�
 
 List of commands for working with MiniOS 7 with explanations / Список команд для работы с MiniOS 7 с пояснениями
 [miniOS command.docx](https://github.com/user-attachments/files/32742110/miniOS.command.docx)  
-
-
-
-###**5DigitLed**
+<br>
+**###5DigitLed**
 
 Displays user input on a ticker of 5 LED elements. / Выводит пользовательский ввод на бегущую строку из 5-и светодиодных элементов.
 
@@ -50,20 +48,16 @@ Y
 
 ```
 <img width="518" height="379" alt="image" src="https://github.com/user-attachments/assets/51279b42-932c-4a44-906d-d3c82bff87a3" />  
-
-
-
-###**FileSystem**
+<br>
+**###FileSystem**
 
 Subtracts an existing file on disk B and allows you to add user input there by caching the contents of the old file, then deleting it and creating a new file into which the cache is written and then what the user entered. The file is saved with the same name as the old file. / Вычитывает существующий файл на диске B и позволяет дописывать туда пользовательский ввод, путём кэширования содержимого старого файла, последующего его удаления и создания нового файла, в который записывается кэш и затем то что ввёл пользователь. Файл сохраняется с тем же именем что было у старого файла. 
 
 <img width="472" height="380" alt="image" src="https://github.com/user-attachments/assets/4bb2fe71-2fc5-4b76-a5b5-3189f9a207e8" />
 
 <img width="410" height="501" alt="image" src="https://github.com/user-attachments/assets/c772e173-d4db-4d9f-ad10-bbdc796d75b8" />  
-
-
-
-###**comExchange**
+<br>
+**###comExchange**
 
 Throws traffic from COM1 (RS-232/485) to COM2 (RS-485) and vice versa. Also, all traffic is duplicated for COM4 analysis (RS-232). As an example, 7188 is placed in the gap between the FST counter and the modem and through COM4 you can track the exchange. / Прокидывает траффик от COM1(RS-232/485) к COM2(RS-485) и наоборот. Также весь траффик дублируется для анализа на COM4(RS-232). В качестве примера 7188 ставится в разрыв между счётчиком ПСЧ и модемом и через COM4 можно отслеживать наличие обмена.
 
