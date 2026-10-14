@@ -2,7 +2,12 @@
 #include <stdio.h>
 #include "7188xa.h"
     
-
+	 // %d (или %i) — для знакового int
+	 // %u - беззнаковый int
+	 // %c - для одного символа char
+	 // %s - массив символов
+	 // %ld — для знакового long
+	 // %lu — для беззнакового unsigned long
 	
 int Receive_Data_Length(int iPort,unsigned char* cInBuf, size_t iLength, long lTimeout);
 void PrintHex(int port, char *label, unsigned char *buf, int len);
@@ -17,14 +22,26 @@ void main(void)
 	int counterQuery = 1;
 
     unsigned char TxData1[] = { 0x15, 0x08, 0x12, 0xE7, 0xC9 };
-	//unsigned char TxData1[] = { 0x15, 0x0A, 0x84, 0x00, 0x00, 0x01, 0x00, 0xAE, 0xE5 };
-	unsigned char TxData2[] = { 0x15, 0x08, 0x03, 0x27, 0xC5 };
-	unsigned char TxData3[] = { 0x15, 0x08, 0x02, 0xE6, 0x05 };
-	unsigned char TxData4[] = { 0x15, 0x08, 0x00, 0x67, 0xC4 };
-	unsigned char TxData5[] = { 0x15, 0x08, 0x0B, 0x26, 0x03 }; 
-	unsigned char TxData6[] = { 0x15, 0x08, 0x00, 0x62, 0xC4 };
-	unsigned char TxData7[] = { 0x15, 0x0A, 0x84, 0x00, 0x01, 0x01, 0x00, 0xFF, 0x25 };
-	unsigned char TxData8[] = { 0x15, 0x0A, 0x84, 0x00, 0x02, 0x01, 0x00, 0x0F, 0x25 };
+	unsigned char TxData2[] = { 0x15, 0x01, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0xCF, 0x17 };
+	unsigned char TxData3[] = { 0x15, 0x0A, 0x84, 0x00, 0x01, 0x01, 0x00, 0xFF, 0x25 }; // Т1
+	unsigned char TxData4[] = { 0x15, 0x0A, 0x84, 0x00, 0x02, 0x01, 0x00, 0x0F, 0x25 }; // Т2
+		
+	/*Print("TEST with print TxData1  = %d\r\n", TxData1); //////////////////
+	Delay(500);
+	Print("u = %u\r\n", TxData1); //////////////////
+	Delay(500);
+	Print("s = %s\r\n", TxData1); //////////////////
+	Delay(500);
+	for(int ii = 0; ii < sizeof(TxData1); ++ii)
+	{
+		Print("c = %c   ", TxData1[ii]); //////////////////
+	    Print("d = %d", TxData1[ii]); //////////////////
+		Print("\r\n");
+	}
+	Delay(500);
+	Print("\r\n");
+	Delay(500);
+	*/
 	
     unsigned char RxData[100];
 
@@ -40,104 +57,95 @@ void main(void)
 
     unsigned long escapeTimer = *TimeTicks;
 	
-    PrintHex(DebugCOMPort, "TX", TxData1, sizeof(TxData1));
+	char millisFirst[15];
+
+	sprintf(millisFirst, "TX(%lu)", *TimeTicks);
+	
+    PrintHex(DebugCOMPort, millisFirst, TxData1, sizeof(TxData1));
+		
+	ToComBufn(PschCOMPort, TxData1, sizeof(TxData1));
+	WaitTransmitOver(PschCOMPort);
 			
-    for (i = 0; i < sizeof(TxData1); ++i) // alter ToComBufn
-        ToCom(PschCOMPort, TxData1[i]);
-				
     while (1)
     {
         if (*TimeTicks - escapeTimer >= 15000)
             break;
 
-        RxLength = Receive_Data_Length(PschCOMPort, RxData, sizeof(RxData), 500);
+        RxLength = Receive_Data_Length(PschCOMPort, RxData, sizeof(RxData), 100);
 
         if (RxLength > 0)
         {
-            PrintHex(DebugCOMPort, "RX", RxData, RxLength);
+			char millisRx[15];
+
+			sprintf(millisRx, "RX(%lu)", *TimeTicks);
 			
-			Delay(20);
+            PrintHex(DebugCOMPort, millisRx, RxData, RxLength);
+			
+			Delay(50);
+			
+			if(counterQuery == 3)
+			{
+				char decVal[4];
+				char hexVal[4];
+				
+				for(int exchange = 1; exchange < 5; ++exchange)
+					hexVal[exchange] = RxData[exchange];
+
+				sprintf(decVal, "TEST(%4lu)", hexVal);
+				
+				 ToComStr(DebugCOMPort, decVal);
+			}
 			
 			counterQuery++;
 			
+			char millis[15];
+
+			sprintf(millis, "TX(%lu)", *TimeTicks);
+						
 			switch(counterQuery)
 			{
+				case(1) :
+				{
+					PrintHex(DebugCOMPort, millis, TxData1, sizeof(TxData1));
+		
+					ToComBufn(PschCOMPort, TxData1, sizeof(TxData1));
+	                WaitTransmitOver(PschCOMPort);
+					
+					break;
+				};
+				
 				case(2) :
 				{
-					 PrintHex(DebugCOMPort, "TX", TxData2, sizeof(TxData2));
+					PrintHex(DebugCOMPort, millis, TxData2, sizeof(TxData2));
 					 
-					for (i = 0; i < sizeof(TxData2); ++i) // alter ToComBufn
-						ToCom(PschCOMPort, TxData2[i]);
+					ToComBufn(PschCOMPort, TxData2, sizeof(TxData2));
+	                WaitTransmitOver(PschCOMPort);
+					
 					break;
 				};
 				
 				case(3) :
 				{
-					 PrintHex(DebugCOMPort, "TX", TxData3, sizeof(TxData3));
+					PrintHex(DebugCOMPort, millis, TxData3, sizeof(TxData3));
 					 
-					for (i = 0; i < sizeof(TxData3); ++i) // alter ToComBufn
-						ToCom(PschCOMPort, TxData3[i]);
+					ToComBufn(PschCOMPort, TxData3, sizeof(TxData3));
+	                WaitTransmitOver(PschCOMPort);
+					
 					break;
 				};
 				
 				case(4) :
 				{
-					 PrintHex(DebugCOMPort, "TX", TxData4, sizeof(TxData4));
+					PrintHex(DebugCOMPort, millis, TxData4, sizeof(TxData4));
 					 
-					for (i = 0; i < sizeof(TxData4); ++i) // alter ToComBufn
-						ToCom(PschCOMPort, TxData4[i]);
+					ToComBufn(PschCOMPort, TxData4, sizeof(TxData4));
+	                WaitTransmitOver(PschCOMPort);
+					
 					break;
 				};
 				
-				case(5) :
-				{
-					 PrintHex(DebugCOMPort, "TX", TxData5, sizeof(TxData5));
-					 
-					for (i = 0; i < sizeof(TxData5); ++i) // alter ToComBufn
-						ToCom(PschCOMPort, TxData5[i]);
-					break;
-				};
-				
-				case(6) :
-				{
-					 PrintHex(DebugCOMPort, "TX", TxData6, sizeof(TxData6));
-					 
-					for (i = 0; i < sizeof(TxData6); ++i) // alter ToComBufn
-						ToCom(PschCOMPort, TxData6[i]);
-					break;
-				};
-				
-				case(7) :
-				{
-					 PrintHex(DebugCOMPort, "TX", TxData7, sizeof(TxData7));
-					 
-					for (i = 0; i < sizeof(TxData7); ++i) // alter ToComBufn
-						ToCom(PschCOMPort, TxData7[i]);
-					break;
-				};
-				
-				case(8) :
-				{
-					 PrintHex(DebugCOMPort, "TX", TxData8, sizeof(TxData8));
-					 
-					for (i = 0; i < sizeof(TxData8); ++i) // alter ToComBufn
-						ToCom(PschCOMPort, TxData8[i]);
-					break;
-				};
-
-				//for (i = 0; i < RxLength; ++i) // alter ToComBufn
-					//ToCom(ModemCOMPort, RxData[i]);
 			}
         }
-		else if(RxLength == 0)
-		{
-			ToComStr(DebugCOMPort, "RxLength == 0\n\r");
-		}
-		else
-		{
-			ToComStr(DebugCOMPort, "RxLength < 0\n\r");
-		}
-
         RefreshWDT();
     }
 
@@ -171,6 +179,7 @@ int Receive_Data_Length(int iPort, unsigned char* cInBuf, size_t iLength, long l
                     
                 lStartTime=*TimeTicks;  /* refresh data timeout */
             }
+			
             if((*TimeTicks-lStartTime)>=lTimeout)
                 return iIndex;  /* receive data timeout */
                 
