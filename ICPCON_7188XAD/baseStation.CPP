@@ -8,6 +8,7 @@
 	 // %s - массив символов
 	 // %ld — для знакового long
 	 // %lu — для беззнакового unsigned long
+	 // %f - для преобразования в float/double
 	
 int Receive_Data_Length(int iPort,unsigned char* cInBuf, size_t iLength, long lTimeout);
 void PrintHex(int port, char *label, unsigned char *buf, int len);
@@ -25,24 +26,7 @@ void main(void)
 	unsigned char TxData2[] = { 0x15, 0x01, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0xCF, 0x17 };
 	unsigned char TxData3[] = { 0x15, 0x0A, 0x84, 0x00, 0x01, 0x01, 0x00, 0xFF, 0x25 }; // Т1
 	unsigned char TxData4[] = { 0x15, 0x0A, 0x84, 0x00, 0x02, 0x01, 0x00, 0x0F, 0x25 }; // Т2
-		
-	/*Print("TEST with print TxData1  = %d\r\n", TxData1); //////////////////
-	Delay(500);
-	Print("u = %u\r\n", TxData1); //////////////////
-	Delay(500);
-	Print("s = %s\r\n", TxData1); //////////////////
-	Delay(500);
-	for(int ii = 0; ii < sizeof(TxData1); ++ii)
-	{
-		Print("c = %c   ", TxData1[ii]); //////////////////
-	    Print("d = %d", TxData1[ii]); //////////////////
-		Print("\r\n");
-	}
-	Delay(500);
-	Print("\r\n");
-	Delay(500);
-	*/
-	
+			
     unsigned char RxData[100];
 
     InitLib();
@@ -83,17 +67,31 @@ void main(void)
 			
 			Delay(50);
 			
-			if(counterQuery == 3)
+			if(counterQuery == 3 || counterQuery == 4)
 			{
-				char decVal[4];
-				char hexVal[4];
+				unsigned char hexVal[4]; // unsigned char - обязательно иначе будет переполенние 
 				
-				for(int exchange = 1; exchange < 5; ++exchange)
-					hexVal[exchange] = RxData[exchange];
+				for(int exchange = 1; exchange < 5; exchange++)
+					hexVal[exchange-1] = RxData[exchange];
 
-				sprintf(decVal, "TEST(%4lu)", hexVal);
-				
-				 ToComStr(DebugCOMPort, decVal);
+				double value;
+				char decVal[16];
+
+				value = ((unsigned long)hexVal[0] << 24)
+					  | ((unsigned long)hexVal[1] << 16)
+					  | ((unsigned long)hexVal[2] << 8)
+					  | (unsigned long)hexVal[3];
+
+				if(counterQuery == 3)
+				{
+					sprintf(decVal, "T1: %f   \n", (value / 2500));
+				}
+				else
+				{
+					sprintf(decVal, "T2: %f   \n", (value / 2500));
+				}
+
+				ToComStr(DebugCOMPort, decVal);
 			}
 			
 			counterQuery++;
@@ -143,7 +141,6 @@ void main(void)
 					
 					break;
 				};
-				
 			}
         }
         RefreshWDT();
