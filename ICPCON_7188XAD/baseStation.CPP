@@ -14,10 +14,13 @@ int Receive_Data_Length(int iPort,unsigned char* cInBuf, size_t iLength, long lT
 void PrintHex(int port, char *label, unsigned char *buf, int len);
 void completeTX(int serialTX, unsigned char *dataTX, int dataLen);
 
-
+FILE_DATA getFileDataStruct(char ** bufferInFile, int iPort);
 
 void main(void)
 {
+	InitLib();
+	ReadSizeAB();
+	
     int TxLength;
     int RxLength;
     int i;
@@ -27,148 +30,256 @@ void main(void)
 	unsigned char TxData2[] = { 0x00, 0x01, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x00, 0x00 };
 	unsigned char TxData3[] = { 0x00, 0x0A, 0x84, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00 }; // Т1
 	unsigned char TxData4[] = { 0x00, 0x0A, 0x84, 0x00, 0x02, 0x01, 0x00, 0x00, 0x00 }; // Т2
-			
+	
     unsigned char RxData[100];
-
-    InitLib();
 
     int PschCOMPort  = 2;
     int DebugCOMPort = 4;
 
     InstallCom(PschCOMPort,  9600, 8, 0, 1);
     InstallCom(DebugCOMPort, 115200, 8, 0, 1);
-
-    ToComStr(DebugCOMPort, "Debug information: Start program\n\r");
-
-    unsigned long escapeTimer = *TimeTicks;
 	
-	int serialAdress = 21;
+	const char* spaceCharArray = "   ";
+	char infoArray[50];
 	
+	sprintf(infoArray, "Disk A size: %u\n", SizeAB.sizeA);
+	ToComStr(DebugCOMPort, infoArray);
+	WaitTransmitOver(DebugCOMPort);
 	
+	sprintf(infoArray, "Disk B size: %u\n", SizeAB.sizeB);
+   	ToComStr(DebugCOMPort, infoArray);
+	WaitTransmitOver(DebugCOMPort);
 	
+	sprintf(infoArray, "Disk C size:    %u\n", SizeAB.sizeC);
+   	ToComStr(DebugCOMPort, infoArray);
+	WaitTransmitOver(DebugCOMPort);
 	
-	size_t length = (sizeof(TxData1) / sizeof(TxData1[0])) - 2;
-    completeTX(serialAdress, TxData1, length);
+	sprintf(infoArray, "SUMM:    %u\n", SizeAB.sum);
+    ToComStr(DebugCOMPort, infoArray);
+	WaitTransmitOver(DebugCOMPort);
 	
-	length = (sizeof(TxData2) / sizeof(TxData2[0])) - 2;
-    completeTX(serialAdress, TxData2, length);
+	sprintf(infoArray, "Files in A = %d\r\n", GetFileNo_AB(0));
+    ToComStr(DebugCOMPort, infoArray);
+	WaitTransmitOver(DebugCOMPort);
 	
-	length = (sizeof(TxData3) / sizeof(TxData3[0])) - 2;
-    completeTX(serialAdress, TxData3, length);
-	
-	length = (sizeof(TxData4) / sizeof(TxData4[0])) - 2;
-    completeTX(serialAdress, TxData4, length);
-	
-	
-	
-	
-	
-	
-	char millisFirst[15];
-
-	sprintf(millisFirst, "TX(%lu)", *TimeTicks);
-	
-    PrintHex(DebugCOMPort, millisFirst, TxData1, sizeof(TxData1));
+	sprintf(infoArray, "Files in B = %d\r\n", GetFileNo_AB(1));
+    ToComStr(DebugCOMPort, infoArray);
+	WaitTransmitOver(DebugCOMPort);
 		
-	ToComBufn(PschCOMPort, TxData1, sizeof(TxData1));
-	WaitTransmitOver(PschCOMPort);
-			
-    while (1)
-    {
-        if (*TimeTicks - escapeTimer >= 3000)
-            break;
+	char strA [100];
+	char strB [100];
+	
+	if(!GetFileName_AB(0,0,strA))
+	{
+		 sprintf(infoArray, "A: File with sketch named = %s\r\n", strA);
+		 ToComStr(DebugCOMPort, infoArray);
+		 WaitTransmitOver(DebugCOMPort);
+	}
+	else
+	{
+		 sprintf(infoArray, "A: Do not save any file in disk\r\n");
+		 ToComStr(DebugCOMPort, infoArray);
+		 WaitTransmitOver(DebugCOMPort);
+	}
 
-        RxLength = Receive_Data_Length(PschCOMPort, RxData, sizeof(RxData), 100);
-
-        if (RxLength > 0)
-        {
-			char millisRx[15];
-
-			sprintf(millisRx, "RX(%lu)", *TimeTicks);
-			
-            PrintHex(DebugCOMPort, millisRx, RxData, RxLength);
-			
-			Delay(50);
-			
-			if(counterQuery == 3 || counterQuery == 4)
+	if(!GetFileName_AB(1,0,strB))
+	{
+		 sprintf(infoArray, "B: File for dataBase named = %s\r\n", strB);
+		 ToComStr(DebugCOMPort, infoArray);
+		 WaitTransmitOver(DebugCOMPort);
+	}
+	else
+		 ToComStr(DebugCOMPort, "B: Do not save any file in disk\r\n");
+	
+    ToComStr(DebugCOMPort, "\nDebug information: Start program\n\n\r");
+	
+	TIME_DATE * checkDateTime;
+	TIME_DATE * currDateTime;
+	
+	SetDo1(1);
+	SetDo2(1);
+	
+	while(1)
+	{	
+		GetTimeDate(currDateTime); // для проверки дат на предмет наступления новых суток
+		
+		Delay(10000);
+		
+		if(!GetDi1()) // при замыкании Di1 выводим базу данных на экран
+		{
+			char far * testBufferInFile;
+			getFileDataStruct(&testBufferInFile, DebugCOMPort);
+		}
+		
+		if(!GetDi2()) break; // при замыкании Di2 завершаем программу
+		
+		if(checkDateTime->day != currDateTime->day)
+		{
+			for(int serialAdress = 1; serialAdress < 255; ++serialAdress) // сканируем 255 адресов
 			{
-				unsigned char hexVal[4]; // unsigned char - обязательно иначе будет переполенние 
+				unsigned long escapeTimer = *TimeTicks;
 				
-				for(int exchange = 1; exchange < 5; exchange++)
-					hexVal[exchange-1] = RxData[exchange];
+				size_t length = (sizeof(TxData1) / sizeof(TxData1[0])) - 2;
+				completeTX(serialAdress, TxData1, length);
+				
+				length = (sizeof(TxData2) / sizeof(TxData2[0])) - 2;
+				completeTX(serialAdress, TxData2, length);
+				
+				length = (sizeof(TxData3) / sizeof(TxData3[0])) - 2;
+				completeTX(serialAdress, TxData3, length);
+				
+				length = (sizeof(TxData4) / sizeof(TxData4[0])) - 2;
+				completeTX(serialAdress, TxData4, length);
+				
+				char millisFirst[15];
 
-				double value;
-				char decVal[16];
-
-				value = ((unsigned long)hexVal[0] << 24)
-					  | ((unsigned long)hexVal[1] << 16)
-					  | ((unsigned long)hexVal[2] << 8)
-					  | (unsigned long)hexVal[3];
-
-				if(counterQuery == 3)
-				{
-					sprintf(decVal, "T1: %f   \n", (value / 2500));
-				}
-				else
-				{
-					sprintf(decVal, "T2: %f   \n", (value / 2500));
-				}
-
-				ToComStr(DebugCOMPort, decVal);
-			}
-			
-			counterQuery++;
-			
-			char millis[15];
-
-			sprintf(millis, "TX(%lu)", *TimeTicks);
+				sprintf(millisFirst, "TX(%lu)", *TimeTicks);
+				
+				PrintHex(DebugCOMPort, millisFirst, TxData1, sizeof(TxData1));
+					
+				ToComBufn(PschCOMPort, TxData1, sizeof(TxData1));
+				WaitTransmitOver(PschCOMPort);
+				
+				char fullString[50];
 						
-			switch(counterQuery)
-			{
-				case(1) :
+				while(1)
 				{
-					PrintHex(DebugCOMPort, millis, TxData1, sizeof(TxData1));
-		
-					ToComBufn(PschCOMPort, TxData1, sizeof(TxData1));
-	                WaitTransmitOver(PschCOMPort);
-					
-					break;
-				};
-				
-				case(2) :
-				{
-					PrintHex(DebugCOMPort, millis, TxData2, sizeof(TxData2));
-					 
-					ToComBufn(PschCOMPort, TxData2, sizeof(TxData2));
-	                WaitTransmitOver(PschCOMPort);
-					
-					break;
-				};
-				
-				case(3) :
-				{
-					PrintHex(DebugCOMPort, millis, TxData3, sizeof(TxData3));
-					 
-					ToComBufn(PschCOMPort, TxData3, sizeof(TxData3));
-	                WaitTransmitOver(PschCOMPort);
-					
-					break;
-				};
-				
-				case(4) :
-				{
-					PrintHex(DebugCOMPort, millis, TxData4, sizeof(TxData4));
-					 
-					ToComBufn(PschCOMPort, TxData4, sizeof(TxData4));
-	                WaitTransmitOver(PschCOMPort);
-					
-					break;
-				};
+					if (*TimeTicks - escapeTimer >= 3000)
+						break;
+
+					RxLength = Receive_Data_Length(PschCOMPort, RxData, sizeof(RxData), 100);
+
+					if (RxLength > 0)
+					{
+						char millisRx[15];
+
+						sprintf(millisRx, "RX(%lu)", *TimeTicks);
+						
+						PrintHex(DebugCOMPort, millisRx, RxData, RxLength);
+						
+						Delay(50);
+						
+						if(counterQuery == 3 || counterQuery == 4)
+						{
+							unsigned char hexVal[4]; // unsigned char - обязательно иначе будет переполенние 
+							
+							for(int exchange = 1; exchange < 5; exchange++)
+								hexVal[exchange-1] = RxData[exchange];
+
+							double value;
+							char decVal[50];
+
+							value = ((unsigned long)hexVal[0] << 24)
+								  | ((unsigned long)hexVal[1] << 16)
+								  | ((unsigned long)hexVal[2] << 8)
+								  | (unsigned long)hexVal[3];
+
+							if(counterQuery == 3)
+							{
+								sprintf(decVal, "#%d#   $%d.%d.%d$   T1: %f", serialAdress, currDateTime->day, currDateTime->month, currDateTime->year, (value / 2500));
+								strcpy(fullString, decVal);
+								strcat(fullString, spaceCharArray);
+							}
+							else
+							{
+								sprintf(decVal, "T2: %f\n\r", (value / 2500));
+								strcat(fullString, decVal);
+								ToComStr(DebugCOMPort, fullString);
+								WaitTransmitOver(DebugCOMPort);
+								
+								char far * bufferInFile;
+								
+								FILE_DATA noPtrFileStruct = getFileDataStruct(&bufferInFile, DebugCOMPort);
+								FILE_DATA * ptrFileStructSecond = &noPtrFileStruct;	
+									
+								int status = OS7_DeleteAllFile(1);						
+								
+								if(status == 0) ToComStr(DebugCOMPort, "\nFILE IS DELETE\r\n");
+								else if(status == -1) { ToComStr(DebugCOMPort, "\nDELETE FAIL\r\n"); break;}
+								else if(status == -2) { ToComStr(DebugCOMPort, "\nNO FILE IN DISK\r\n"); break;}
+								else if(status == -3) { ToComStr(DebugCOMPort, "\nDiskB size is zero\r\n"); break;}
+								
+								if(!OS7_OpenWriteFile(1) && ptrFileStructSecond != NULL)
+								{
+									if(OS7_WriteFile(1,bufferInFile,strlen(bufferInFile)) >= 0)
+									{
+										if(OS7_WriteFile(1,fullString,strlen(fullString)) >= 0)
+										{
+											if(OS7_CloseWriteFile(1, ptrFileStructSecond) >=0)
+												ToComStr(DebugCOMPort, "\nDATA IS ACCEPT\n\n\r");
+											else
+												ToComStr(DebugCOMPort, "OS7_CloseWriteFile Error: somthing going wrong\r\n");
+										}
+										else
+											ToComStr(DebugCOMPort, "OS7_WriteFile Error: somthing going wrong with fullString\r\n");
+									}
+									else
+										ToComStr(DebugCOMPort, "OS7_WriteFile Error: somthing going wrong with bufferInFile\r\n");
+								}
+								else
+								{
+									if(ptrFileStructSecond != NULL)
+										ToComStr(DebugCOMPort, "OS7_OpenWriteFile Error: somthing going wrong\r\n");
+									else
+										ToComStr(DebugCOMPort, "OS7_OpenWriteFile Error: fileStruct is NULL\r\n");
+								}
+									delete[] bufferInFile;	
+							}
+
+							if(counterQuery == 4) break;
+						}
+						
+						counterQuery++;
+						
+						char millis[15];
+
+						sprintf(millis, "TX(%lu)", *TimeTicks);
+									
+						switch(counterQuery)
+						{
+							case(1) :
+							{
+								PrintHex(DebugCOMPort, millis, TxData1, sizeof(TxData1));
+								ToComBufn(PschCOMPort, TxData1, sizeof(TxData1));
+								WaitTransmitOver(PschCOMPort);
+								
+								break;
+							};
+							
+							case(2) :
+							{
+								PrintHex(DebugCOMPort, millis, TxData2, sizeof(TxData2));
+								ToComBufn(PschCOMPort, TxData2, sizeof(TxData2));
+								WaitTransmitOver(PschCOMPort);
+								
+								break;
+							};
+							
+							case(3) :
+							{
+								PrintHex(DebugCOMPort, millis, TxData3, sizeof(TxData3));
+								ToComBufn(PschCOMPort, TxData3, sizeof(TxData3));
+								WaitTransmitOver(PschCOMPort);
+								
+								break;
+							};
+							
+							case(4) :
+							{
+								PrintHex(DebugCOMPort, millis, TxData4, sizeof(TxData4));
+								ToComBufn(PschCOMPort, TxData4, sizeof(TxData4));
+								WaitTransmitOver(PschCOMPort);
+								
+								break;
+							};
+						}
+					}
+					RefreshWDT();
+				}
 			}
-        }
-        RefreshWDT();
-    }	
-	
+	        GetTimeDate(checkDateTime);
+		}		
+	}
     RestoreCom(PschCOMPort);
     RestoreCom(DebugCOMPort);
 }
@@ -225,8 +336,7 @@ void PrintHex(int port, char *label, unsigned char *buf, int len)
 		{
 			char hexBuf[10];
 
-			sprintf(hexBuf, "%02X ", buf[i]);
-			
+			sprintf(hexBuf, "%02X ", buf[i]);	
 /*
 % — начало спецификатора формата.
 0 — флаг: заполнять поле нулями слева, если значение короче указанной ширины.
@@ -290,4 +400,51 @@ void completeTX(int serialTX, unsigned char *dataTX, int dataLen)
 
     delete[] TempForCRC;
     TempForCRC = NULL;
+}
+
+
+
+FILE_DATA getFileDataStruct(char ** bufferInFile, int iPort)
+{
+	char infoArray[50];
+
+	char far *textFromFile; // если файл будет больше 64КБ то требуется: char huge *textFromFile;
+
+	textFromFile = GetFilePositionByNo_AB(1, 0); 
+
+	FILE_DATA far * fileStruct = GetFileInfoByNo_AB(1, 0);
+
+	*bufferInFile = new char[fileStruct->size + 1]; // +1 для '\0'
+
+	if(textFromFile != NULL)
+	{
+		sprintf(infoArray, "\nB: File size in Strcut: %ld\r\nB: Text in file:\n\n", fileStruct->size);
+		ToComStr(iPort, infoArray);
+		WaitTransmitOver(iPort);
+
+		for (int i = 0; i < fileStruct->size; ++i)
+		{
+			(*bufferInFile)[i] = textFromFile[i];
+
+			/*if ((*bufferInFile)[i] == '\n') // Если необходимо отследить окончание строки в текстовике
+				Print("\r\n******************\r\n");*/
+
+			sprintf(infoArray, "%c", (*bufferInFile)[i]);
+			ToComStr(iPort, infoArray);
+			WaitTransmitOver(iPort);
+		}
+
+		(*bufferInFile)[fileStruct->size] = '\0';
+		
+		return *fileStruct;
+	}
+	else
+	{
+		ToComStr(iPort, "B: Text in file is null\r\n");
+		WaitTransmitOver(iPort);
+
+		FILE_DATA emptyData;
+		
+		return emptyData;
+	}
 }
