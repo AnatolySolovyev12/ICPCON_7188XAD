@@ -11,6 +11,38 @@ List of commands for working with MiniOS 7 with explanations / Список ко
 [miniOS command.docx](https://github.com/user-attachments/files/32742110/miniOS.command.docx)  
 <br>
 
+### **baseStation**
+
+The sketch converts 7188 into a base station performing the following functions:
+
+1) When a new day arrives, it polls from 1 to 255 network addresses on the COM2 according to the NZIF/SET counter protocol (3TM/ 4TM, etc.). The readings of the first and second tariff at the beginning of the current day are requested.
+2) The obtained readings are recorded in the first file on disk B (conditional database).
+3) All manipulations are duplicated in the form of a log on the COM4.
+4) A high signal level is set on the DO1 and DO2 from the moment of starting.
+5) When a high signal level is applied to the DI2, the program execution is completed and the OS is released. No DI check is performed during counter polling.
+6) When a high signal level is applied to the DI1, a transition to the context menu is made where you can:
+a) display the entire database
+b) display information from the database at a specific network address
+c) restart the program
+
+/
+
+Скетч преобразует 7188 в базовую станцию выполняющую следующие функции:
+
+1) При наступлении новых суток опрашивает от 1 до 255 сетевой адрес на COM2 по протоколу счётчика ПСЧ/СЭТ (3ТМ / 4ТМ и т.п.) производства NZIF. Запрашиваются показания первого и второго тарифа на начало текущих суток. 
+2) Полученные показания записываются в первый файл на диске B (условная база данных).
+3) Все манипуляции дублируются в виде лога на COM4. 
+4) На DO1 и DO2 с момента запуска задаётся высокий уровень сигнала.
+5) При подаче высокого уровня сигнала на DI2 выполнение программы завершается  и производится выход в ОС. Во время опроса счётчиков проверка DI не производится.
+6) При подаче высокого уровня сигнала на DI1, производится переход в контекстное меню где можно:
+    a) вывести на экран всю базу данных
+    б) вывести на экран информацию из базы по конкретному сетевому адресу
+    в) перезагрузить программу
+    г) выйти из программы в ОС
+
+<img width="947" height="502" alt="12345" src="https://github.com/user-attachments/assets/f8a64300-cb2e-4d4d-ad48-ef1396148c84" />
+<br>
+
 ### **5DigitLed**
 
 Displays user input on a ticker of 5 LED elements. / Выводит пользовательский ввод на бегущую строку из 5-и светодиодных элементов.
