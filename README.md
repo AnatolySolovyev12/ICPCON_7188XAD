@@ -41,7 +41,8 @@ c) restart the program
     г) выйти из программы в ОС
 
 <img width="947" height="502" alt="12345" src="https://github.com/user-attachments/assets/f8a64300-cb2e-4d4d-ad48-ef1396148c84" />
-...
+<br>
+
 ### **5DigitLed**
 
 Displays user input on a ticker of 5 LED elements. / Выводит пользовательский ввод на бегущую строку из 5-и светодиодных элементов.
