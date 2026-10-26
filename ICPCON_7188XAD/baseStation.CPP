@@ -17,6 +17,7 @@ int ReadLine(int port, char* buf, int maxLen);
 void (far* Reset_Program)(void) = (void (far*)(void))0xFFFF0000L;
 FILE_DATA getSingleSerialData(int iPort, char* serial, size_t lengthSerial);
 FILE_DATA getFileDataStruct(char** bufferInFile, int iPort);
+FILE_DATA getFileDataStructWithoutLog(char** bufferInFile, int iPort);
 
 void main(void)
 {
@@ -32,8 +33,6 @@ void main(void)
 	unsigned char TxData2[] = { 0x00, 0x01, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x00, 0x00 };
 	unsigned char TxData3[] = { 0x00, 0x0A, 0x84, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00 }; // Т1
 	unsigned char TxData4[] = { 0x00, 0x0A, 0x84, 0x00, 0x02, 0x01, 0x00, 0x00, 0x00 }; // Т2
-
-	unsigned char RxData[100];
 
 	int PschCOMPort = 2;
 	int DebugCOMPort = 4;
@@ -70,14 +69,16 @@ void main(void)
 	ToComStr(DebugCOMPort, infoArray);
 	WaitTransmitOver(DebugCOMPort);
 
-	char strA[100];
-	char strB[100];
-
-	if (!GetFileName_AB(0, 0, strA))
+	if (GetFileNo_AB(0))
 	{
-		sprintf(infoArray, "A: File with sketch named = %s\r\n", strA);
-		ToComStr(DebugCOMPort, infoArray);
-		WaitTransmitOver(DebugCOMPort);
+		for (int counter = 0; counter < GetFileNo_AB(0); ++counter)
+		{
+			char strA[100];
+			GetFileName_AB(0, counter, strA);
+			sprintf(infoArray, "A: File #%d = %s\r\n", (counter + 1), strA);
+			ToComStr(DebugCOMPort, infoArray);
+			WaitTransmitOver(DebugCOMPort);
+		}
 	}
 	else
 	{
@@ -86,14 +87,23 @@ void main(void)
 		WaitTransmitOver(DebugCOMPort);
 	}
 
-	if (!GetFileName_AB(1, 0, strB))
+	if (GetFileNo_AB(1))
 	{
-		sprintf(infoArray, "B: File for dataBase named = %s\r\n", strB);
+		for (int counter = 0; counter < GetFileNo_AB(1); ++counter)
+		{
+			char strB[100];
+			GetFileName_AB(1, counter, strB);
+			sprintf(infoArray, "B: File #%d = %s\r\n", (counter + 1), strB);
+			ToComStr(DebugCOMPort, infoArray);
+			WaitTransmitOver(DebugCOMPort);
+		}
+	}
+	else
+	{
+		sprintf(infoArray, "A: Do not save any file in disk\r\n");
 		ToComStr(DebugCOMPort, infoArray);
 		WaitTransmitOver(DebugCOMPort);
 	}
-	else
-		ToComStr(DebugCOMPort, "B: Do not save any file in disk\r\n");
 
 	TIME_DATE* checkDateTime;
 	TIME_DATE* currDateTime;
@@ -115,11 +125,12 @@ void main(void)
 			{
 				char charCommand[2];
 				ToComStr(DebugCOMPort,
-					"\n\rChoose what command do you need?\n\r"
+					"\n\n\rChoose what command do you need?\n\r"
 					"1-show all data base\n\r"
 					"2-show data for one serial number\n\r"
 					"3-restart programm\n\r"
 					"4-quit from programm\n\r"
+					"5-continue without quit\n\r"
 				);
 				ReadLine(DebugCOMPort, charCommand, 2);
 
@@ -148,8 +159,13 @@ void main(void)
 					exit = 1;
 					break;
 				}
+				else if (strcmp(charCommand, "5") == 0)
+				{
+					break;
+				}
 			}
-			if (exit) break;
+
+			if (exit) break; // quit bool
 		}
 
 		if (!GetDi2()) break; // при замыкании Di2 завершаем программу
@@ -185,8 +201,10 @@ void main(void)
 
 				while (1)
 				{
-					if (*TimeTicks - escapeTimer >= 3000)
+					if (*TimeTicks - escapeTimer >= 2000)
 						break;
+
+					unsigned char RxData[100];
 
 					RxLength = Receive_Data_Length(PschCOMPort, RxData, sizeof(RxData), 100);
 
@@ -230,7 +248,7 @@ void main(void)
 
 								char far* bufferInFile;
 
-								FILE_DATA noPtrFileStruct = getFileDataStruct(&bufferInFile, DebugCOMPort);
+								FILE_DATA noPtrFileStruct = getFileDataStructWithoutLog(&bufferInFile, DebugCOMPort);
 								FILE_DATA* ptrFileStructSecond = &noPtrFileStruct;
 
 								int status = OS7_DeleteAllFile(1);
@@ -264,10 +282,18 @@ void main(void)
 									else
 										ToComStr(DebugCOMPort, "OS7_OpenWriteFile Error: fileStruct is NULL\r\n");
 								}
+
 								delete[] bufferInFile;
+
+								for (int counterForClear = 0; counterForClear < (sizeof(fullString) / sizeof(fullString[0])); ++counterForClear)
+									fullString[counterForClear] = ' ';
 							}
 
-							if (counterQuery == 4) break;
+							if (counterQuery == 4)
+							{
+								counterQuery = 0;
+								break;
+							}
 						}
 
 						counterQuery++;
@@ -474,6 +500,44 @@ FILE_DATA getFileDataStruct(char** bufferInFile, int iPort)
 			ToComStr(iPort, infoArray);
 			WaitTransmitOver(iPort);
 		}
+
+		(*bufferInFile)[fileStruct->size] = '\0';
+
+		return *fileStruct;
+	}
+	else
+	{
+		ToComStr(iPort, "B: Text in file is null\r\n");
+		WaitTransmitOver(iPort);
+
+		FILE_DATA emptyData;
+
+		return emptyData;
+	}
+}
+
+
+
+FILE_DATA getFileDataStructWithoutLog(char** bufferInFile, int iPort)
+{
+	char infoArray[50];
+
+	char far* textFromFile; // если файл будет больше 64КБ то требуется: char huge *textFromFile;
+
+	textFromFile = GetFilePositionByNo_AB(1, 0);
+
+	FILE_DATA far* fileStruct = GetFileInfoByNo_AB(1, 0);
+
+	*bufferInFile = new char[fileStruct->size + 1]; // +1 для '\0'
+
+	if (textFromFile != NULL)
+	{
+		sprintf(infoArray, "\nB: File size in Strcut: %ld\r\n\n", fileStruct->size);
+		ToComStr(iPort, infoArray);
+		WaitTransmitOver(iPort);
+
+		for (int i = 0; i < fileStruct->size; ++i)
+			(*bufferInFile)[i] = textFromFile[i];
 
 		(*bufferInFile)[fileStruct->size] = '\0';
 
